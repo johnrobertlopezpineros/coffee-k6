@@ -456,10 +456,7 @@ canvas.radar-chart{display:block;margin:0 auto}
           <div class="slider-label-row"><span class="slider-label">Cuerpo</span><span class="slider-val" id="val-cuerpo">5</span></div>
           <input type="range" min="1" max="10" value="5" id="sl-cuerpo" oninput="updateSlider('cuerpo')">
         </div>
-        <div class="slider-group">
-          <div class="slider-label-row"><span class="slider-label">Residuo</span><span class="slider-val" id="val-residuo">5</span></div>
-          <input type="range" min="1" max="10" value="5" id="sl-residuo" oninput="updateSlider('residuo')">
-        </div>
+
         <div class="slider-group">
           <div class="slider-label-row"><span class="slider-label">Aroma</span><span class="slider-val" id="val-aroma">5</span></div>
           <input type="range" min="1" max="10" value="5" id="sl-aroma" oninput="updateSlider('aroma')">
@@ -535,7 +532,7 @@ canvas.radar-chart{display:block;margin:0 auto}
 
 <script>
 const RATIOS_OPT=[14,15,16,17,18];
-const DESCRIPTORS=['acidez','dulzor','cuerpo','residuo','aroma'];
+const DESCRIPTORS=['acidez','dulzor','cuerpo','aroma'];
 const calcWater=(d,r)=>d*r, calcBloom=d=>Math.round(d*2);
 
 const RECIPES=[
@@ -846,8 +843,8 @@ function renderStats(){
       <div class="chart-box-title">Perfil de sabor promedio</div>
       <canvas class="radar-chart" id="radar-canvas" width="260" height="260"></canvas>
     </div>`:''}
-    ${best?`<div class="chart-box">
-      <div class="chart-box-title">Mejor sesión registrada</div>
+    ${best?`<div class="chart-box" onclick="goToBestSession(${best.id})" title="Ver en Mi Registro" style="cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">
+      <div class="chart-box-title">Mejor sesión registrada <span style="font-size:11px;color:var(--text3)">↗ Ver registro</span></div>
       <div style="font-size:15px;color:var(--text);font-weight:500">${best.method} · ${best.score.toFixed(1)}/10</div>
       ${best.bean?`<div style="font-size:14px;color:var(--accent);font-style:italic;margin-top:3px">${best.bean}</div>`:''}
       ${best.date?`<div style="font-size:12px;color:var(--text3);margin-top:3px">${best.date}</div>`:''}
@@ -1089,6 +1086,23 @@ function switchTab(tab){
     (i===0&&tab==='recipes')||(i===1&&tab==='log')||(i===2&&tab==='stats')));
   if(tab==='log') renderLogs();
   if(tab==='stats') renderStats();
+}
+function goToBestSession(localId){
+  switchTab('log');
+  setTimeout(()=>{
+    const items=document.querySelectorAll('#log-list .log-item');
+    const best=logs.find(l=>l.id===localId);
+    if(!best||!items.length) return;
+    const filtered=getFilteredLogs();
+    const idx=filtered.findIndex(l=>l.id===localId);
+    if(idx<0) return;
+    const el=items[idx];
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.style.transition='box-shadow .2s, outline .2s';
+    el.style.outline='2px solid var(--accent)';
+    el.style.boxShadow='0 0 0 4px rgba(167,119,80,.25)';
+    setTimeout(()=>{el.style.outline='';el.style.boxShadow='';},2000);
+  },120);
 }
 
 // ── Log ───────────────────────────────────────────────────────────────
