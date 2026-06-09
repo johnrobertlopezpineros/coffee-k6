@@ -233,13 +233,27 @@ canvas.radar-chart{display:block;margin:0 auto}
 .log-filter-select{font-size:13px;font-family:'DM Mono',monospace;padding:8px 10px;border:0.5px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text);-webkit-appearance:none;appearance:none;cursor:pointer}
 .log-filter-select:focus{outline:none;border-color:var(--accent)}
 .log-result-count{font-size:12px;color:var(--text3);white-space:nowrap;align-self:center}
+
+/* Estilos para edición y badges de parámetros en historial */
+.edit-btn{background:none;border:none;cursor:pointer;font-size:15px;color:var(--text3);padding:3px 6px;border-radius:3px;flex-shrink:0;margin-left:8px}
+.edit-btn:active{color:var(--accent)}
+.log-params{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap}
+.log-param-badge{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:0.5px solid var(--border);border-radius:4px;padding:4px 8px;font-size:13px;color:var(--text2)}
+.log-param-val{font-weight:600;color:var(--accent)}
+.log-param-key{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+/* Badges de parámetros clave */
+.log-key-params{display:flex;gap:6px;margin:7px 0 4px;flex-wrap:wrap}
+.key-badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;letter-spacing:.02em}
+.key-badge--clicks{background:rgba(167,119,80,.18);color:#c8874a;border:1px solid rgba(167,119,80,.3)}
+.key-badge--temp{background:rgba(220,80,60,.15);color:#d95b44;border:1px solid rgba(220,80,60,.28)}
+.key-badge--time{background:rgba(60,150,130,.15);color:#3a9e88;border:1px solid rgba(60,150,130,.28)}
 </style>
 
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot }
+  import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot, updateDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
     getRedirectResult, signOut, onAuthStateChanged }
@@ -309,6 +323,9 @@ canvas.radar-chart{display:block;margin:0 auto}
     },
     async remove(uid, firestoreId) {
       await deleteDoc(doc(db, 'users', uid, 'sessions', firestoreId));
+    },
+    async update(uid, firestoreId, entry) {
+      await updateDoc(doc(db, 'users', uid, 'sessions', firestoreId), entry);
     },
     listen(uid, callback) {
       if (unsubscribe) unsubscribe();
@@ -464,7 +481,8 @@ canvas.radar-chart{display:block;margin:0 auto}
       </div>
 
       <div class="btn-row">
-        <button class="submit-btn" onclick="submitLog()">Guardar sesión</button>
+        <button class="submit-btn" id="submit-btn" onclick="submitLog()">Guardar sesión</button>
+        <button class="export-btn" id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancelar</button>
         <button class="export-btn" id="export-btn" onclick="exportPDF()">PDF</button>
       </div>
       <div class="status-msg" id="status-msg"></div>
@@ -600,6 +618,7 @@ const RECIPES=[
 let currentFilter='all', expandedId=null;
 let selectedDoses={}, selectedRatios={};
 let logs=[];
+let editingFirestoreId=null, editingLocalId=null;
 
 // ── Timer ─────────────────────────────────────────────────────────────
 let activeTimer = null;
@@ -910,6 +929,42 @@ function drawRadar(canvas, data, labels){
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────
+function editLog(firestoreId, localId) {
+  const log = logs.find(l => (firestoreId && l.firestoreId === firestoreId) || l.id === localId);
+  if (!log) return;
+  editingFirestoreId = firestoreId || null;
+  editingLocalId = localId || null;
+  document.getElementById('log-method').value = log.method;
+  document.getElementById('log-ratio').value = log.ratio || 16;
+  document.getElementById('log-dose-input').value = log.dose || 18;
+  document.getElementById('log-bean').value = log.bean || '';
+  document.getElementById('log-clicks').value = log.clicks || '';
+  document.getElementById('log-temp').value = log.temp || '';
+  document.getElementById('log-time').value = log.brewTime || '';
+  const desc = log.descriptors || {};
+  DESCRIPTORS.forEach(d => {
+    const val = desc[d] !== undefined ? desc[d] : 5;
+    document.getElementById('sl-' + d).value = val;
+    updateSlider(d);
+  });
+  document.getElementById('sl-score').value = log.score !== undefined ? log.score : 7;
+  updateScore();
+  document.getElementById('log-notes').value = log.notes || '';
+  document.querySelector('.form-title').textContent = 'Editar sesión';
+  document.getElementById('submit-btn').textContent = 'Guardar cambios';
+  document.getElementById('cancel-btn').style.display = 'block';
+  document.getElementById('export-btn').style.display = 'none';
+  document.getElementById('pane-log').scrollTop = 0;
+}
+function cancelEdit() {
+  editingFirestoreId = null;
+  editingLocalId = null;
+  resetForm();
+  document.querySelector('.form-title').textContent = 'Nueva sesión';
+  document.getElementById('submit-btn').textContent = 'Guardar sesión';
+  document.getElementById('cancel-btn').style.display = 'none';
+  document.getElementById('export-btn').style.display = 'block';
+}
 function updateSlider(n){document.getElementById('val-'+n).textContent=document.getElementById('sl-'+n).value;}
 function updateScore(){document.getElementById('val-score').textContent=parseFloat(document.getElementById('sl-score').value).toFixed(1);}
 function getDescriptors(){const o={};DESCRIPTORS.forEach(d=>o[d]=parseInt(document.getElementById('sl-'+d).value));return o;}
@@ -1041,8 +1096,6 @@ async function submitLog(){
   const dose=parseInt(document.getElementById('log-dose-input').value)||18;
   const ratio=parseInt(document.getElementById('log-ratio').value)||16;
   const entry={
-    id: Date.now(),
-    timestamp: Date.now(),
     method:document.getElementById('log-method').value,
     dose, ratio,
     water: calcWater(dose,ratio),
@@ -1052,21 +1105,49 @@ async function submitLog(){
     brewTime:document.getElementById('log-time').value.trim(),
     descriptors:getDescriptors(),
     score:parseFloat(document.getElementById('sl-score').value),
-    notes:document.getElementById('log-notes').value.trim(),
-    date:new Date().toLocaleString('es-CO',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+    notes:document.getElementById('log-notes').value.trim()
   };
-  resetForm();
   setStatus('Guardando…');
   try {
-    if (window._fb && currentUser) {
-      await window._fb.save(currentUser.uid, entry);
-      setStatus('Sesión guardada ✓');
+    const isEdit = (editingFirestoreId !== null || editingLocalId !== null);
+    if (isEdit) {
+      if (window._fb && currentUser && editingFirestoreId) {
+        const origLog = logs.find(l => l.firestoreId === editingFirestoreId);
+        const updateData = {
+          ...entry,
+          timestamp: origLog ? origLog.timestamp : Date.now(),
+          date: origLog ? origLog.date : new Date().toLocaleString('es-CO',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+        };
+        await window._fb.update(currentUser.uid, editingFirestoreId, updateData);
+        setStatus('Sesión actualizada ✓');
+      } else {
+        logs = logs.map(l => l.id === editingLocalId ? {
+          ...l,
+          ...entry,
+          water: calcWater(dose, ratio)
+        } : l);
+        cacheLocal(currentUser ? currentUser.uid : 'offline', logs);
+        renderLogs();
+        setStatus('Actualizado localmente ✓');
+      }
+      cancelEdit();
     } else {
-      // Offline fallback: save only to localStorage
-      logs.unshift(entry);
-      cacheLocal(logs);
-      renderLogs();
-      setStatus('Guardado localmente (sin conexión)');
+      const newEntry = {
+        ...entry,
+        id: Date.now(),
+        timestamp: Date.now(),
+        date: new Date().toLocaleString('es-CO',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      };
+      if (window._fb && currentUser) {
+        await window._fb.save(currentUser.uid, newEntry);
+        setStatus('Sesión guardada ✓');
+      } else {
+        logs.unshift(newEntry);
+        cacheLocal(currentUser ? currentUser.uid : 'offline', logs);
+        renderLogs();
+        setStatus('Guardado localmente (sin conexión)');
+      }
+      resetForm();
     }
   } catch(e) {
     setStatus('Error al guardar. Intenta de nuevo.');
@@ -1078,10 +1159,9 @@ async function deleteLog(firestoreId, localId) {
   try {
     if (window._fb && currentUser && firestoreId) {
       await window._fb.remove(currentUser.uid, firestoreId);
-      // onSnapshot refreshes the list
     } else {
       logs = logs.filter(l => l.id !== localId);
-      cacheLocal(logs);
+      cacheLocal(currentUser ? currentUser.uid : 'offline', logs);
       renderLogs();
     }
   } catch(e) {
@@ -1137,16 +1217,23 @@ function renderLogs(){
   list.innerHTML=filtered.map(l=>{
     const desc=l.descriptors||{};
     const pills=Object.entries(desc).map(([k,v])=>`<span class="desc-pill">${k} ${v}/10</span>`).join('');
-    const meta=[l.date, l.clicks?l.clicks+' clicks':null, l.temp||null, l.brewTime?'⏱ '+l.brewTime:null].filter(Boolean).join(' · ');
+    const dateStr=l.date||'';
+    const keyBadges=[
+      l.clicks?`<span class="key-badge key-badge--clicks">⚙ ${l.clicks} clicks</span>`:'',
+      l.temp?`<span class="key-badge key-badge--temp">🌡 ${l.temp}</span>`:'',
+      l.brewTime?`<span class="key-badge key-badge--time">⏱ ${l.brewTime}</span>`:'',
+    ].filter(Boolean).join('');
     return `<div class="log-item">
       <div class="log-item-header">
         <div style="flex:1;min-width:0">
           <div class="log-title">${l.method} · ${l.dose}g · 1:${l.ratio||16} · ${l.water||'--'}ml</div>
           ${l.bean?`<div class="log-bean">${l.bean}</div>`:''}
-          <div class="log-meta">${meta}</div>
+          ${keyBadges?`<div class="log-key-params">${keyBadges}</div>`:''}
+          ${dateStr?`<div class="log-meta">${dateStr}</div>`:''}
         </div>
-        <div style="display:flex;align-items:center;flex-shrink:0">
+        <div style="display:flex;align-items:center;flex-shrink:0;gap:4px">
           <span class="log-score">${(l.score||0).toFixed(1)}/10</span>
+          <button class="edit-btn" title="Editar" onclick="editLog('${l.firestoreId||''}',${l.id})">✎</button>
           <button class="delete-btn" onclick="deleteLog('${l.firestoreId||''}',${l.id})">✕</button>
         </div>
       </div>
