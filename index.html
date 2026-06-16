@@ -792,13 +792,12 @@ canvas.radar-chart{display:block;margin:0 auto;max-width:100%}
         </div>
         <div class="form-group">
           <label>Ratio</label>
-          <select id="log-ratio">
-            <option value="14">1:14</option>
-            <option value="15">1:15</option>
-            <option value="16" selected>1:16</option>
-            <option value="17">1:17</option>
-            <option value="18">1:18</option>
-          </select>
+          <div class="dose-input-wrap">
+            <button class="dose-step" onclick="stepRatioLog(-1)">−</button>
+            <span class="dose-unit">1:</span>
+            <input type="number" id="log-ratio" value="15" min="10" max="20" inputmode="numeric" class="dose-input">
+            <button class="dose-step" onclick="stepRatioLog(1)">+</button>
+          </div>
         </div>
       </div>
 
@@ -940,23 +939,23 @@ const RECIPES=[
     {t:'3:30',s:'Goteo termina ~3:30-4:00 min.'}]},
    notes:'Clicks actuales: 105 (probando 102). El switch cerrado da mayor contacto café-agua antes del filtrado.'},
   {id:2,method:'V60 Tradicional',name:'V60 -- vertido clásico',desc:'Percolación continua. Control total del flujo.',temp:'91°C',
-   baseClicks:98, totalTime:'2:30 - 3:00 min',
+   baseClicks:80, totalTime:'2:30 - 3:00 min',
    steps:(d,r)=>{const w=calcWater(d,r),b=calcBloom(d);return[
     {t:'0:00',s:`Bloom: ${b}ml. Espera 30 seg.`},
     {t:'0:30',s:`Vierte hasta ${Math.round(w*.45)}ml en espiral.`},
     {t:'1:10',s:`Segunda hasta ${Math.round(w*.7)}ml. Flujo delgado.`},
     {t:'1:45',s:`Tercera hasta ${w}ml.`},
     {t:'2:45',s:'Goteo completo. Retira el V60.'}]},
-   notes:'Molienda ligeramente más fina que el Switch. Bloom sin expansión = café oxidado.'},
+   notes:'Clicks recomendados: 80. Bloom sin expansión = café oxidado.'},
   {id:3,method:'V60 Neo Tritan',name:'Neo Tritan -- mayor retención de calor',desc:'Misma técnica V60, plástico de alto rendimiento.',temp:'91°C',
-   baseClicks:107, totalTime:'2:30 - 3:00 min',
+   baseClicks:80, totalTime:'2:30 - 3:00 min',
    steps:(d,r)=>{const w=calcWater(d,r),b=calcBloom(d);return[
     {t:'0:00',s:`Precalienta bien. Bloom: ${b}ml.`},
     {t:'0:35',s:`Vierte hasta ${Math.round(w*.45)}ml. Circular suave.`},
     {t:'1:10',s:`Segunda hasta ${Math.round(w*.7)}ml.`},
     {t:'1:50',s:`Completa hasta ${w}ml.`},
     {t:'2:45',s:'Goteo completo.'}]},
-   notes:'Tus clicks: 105-110. Retiene más temperatura que cerámica o vidrio.'},
+   notes:'Clicks recomendados: 80. Retiene más temperatura que cerámica o vidrio.'},
   {id:4,method:'Aeropress',name:'Aeropress -- extracción rápida',desc:'Presión + tiempo corto. Perfil concentrado.',temp:'91°C',
    baseClicks:98, totalTime:'1:30 - 2:00 min',
    steps:(d,r)=>{const w=calcWater(d,r);return[
@@ -1326,7 +1325,7 @@ function editLog(firestoreId, localId) {
   editingFirestoreId = firestoreId || null;
   editingLocalId = localId || null;
   document.getElementById('log-method').value = log.method;
-  document.getElementById('log-ratio').value = log.ratio || 16;
+  document.getElementById('log-ratio').value = log.ratio || 15;
   document.getElementById('log-dose-input').value = log.dose || 18;
   document.getElementById('log-bean').value = log.bean || '';
   document.getElementById('log-clicks').value = log.clicks || '';
@@ -1380,9 +1379,30 @@ function onDoseCardChange(id){
   renderRecipes();
 }
 
+function stepRatioLog(delta){
+  const el=document.getElementById('log-ratio');
+  const val=Math.min(20,Math.max(10,(parseInt(el.value)||15)+delta));
+  el.value=val;
+}
+function stepRatioCard(id, delta){
+  const el=document.getElementById('ratio-input-'+id);
+  const val=Math.min(20,Math.max(10,(parseInt(el.value)||15)+delta));
+  el.value=val;
+  selectedRatios[id]=val;
+  renderRecipes();
+}
+function onRatioCardChange(id){
+  const el=document.getElementById('ratio-input-'+id);
+  const val=Math.min(20,Math.max(10,parseInt(el.value)||15));
+  el.value=val;
+  selectedRatios[id]=val;
+  renderRecipes();
+}
+
 function resetForm(){
   ['log-bean','log-clicks','log-temp','log-time','log-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('log-dose-input').value=18;
+  document.getElementById('log-ratio').value=15;
   DESCRIPTORS.forEach(d=>{document.getElementById('sl-'+d).value=5;updateSlider(d);});
   document.getElementById('sl-score').value=7;updateScore();
 }
@@ -1393,7 +1413,7 @@ function renderRecipes(){
   const filtered=currentFilter==='all'?RECIPES:RECIPES.filter(r=>r.method===currentFilter);
   grid.innerHTML=filtered.map(recipe=>{
     const dose = selectedDoses[recipe.id] || 18;
-    const ratio = selectedRatios[recipe.id] || 16;
+    const ratio = selectedRatios[recipe.id] || 15;
     const w = calcWater(dose, ratio);
     const isExp = expandedId===recipe.id;
 
@@ -1422,7 +1442,13 @@ function renderRecipes(){
         </div>
         <div class="selector-group">
           <div class="selector-label">Ratio</div>
-          <div class="selector-btns">${RATIOS_OPT.map(r=>`<button class="sel-btn${ratio===r?' active':''}" onclick="setRatio(${recipe.id},${r})">1:${r}</button>`).join('')}</div>
+          <div class="dose-input-wrap">
+            <button class="dose-step" onclick="stepRatioCard(${recipe.id},-1)">−</button>
+            <span class="dose-unit">1:</span>
+            <input class="dose-input" id="ratio-input-${recipe.id}" type="number" value="${ratio}" min="10" max="20" inputmode="numeric"
+              onchange="onRatioCardChange(${recipe.id})" oninput="onRatioCardChange(${recipe.id})">
+            <button class="dose-step" onclick="stepRatioCard(${recipe.id},1)">+</button>
+          </div>
         </div>
       </div>
 
@@ -1502,7 +1528,7 @@ function goToBestSession(localId){
 // ── Log ───────────────────────────────────────────────────────────────
 async function submitLog(){
   const dose=parseInt(document.getElementById('log-dose-input').value)||18;
-  const ratio=parseInt(document.getElementById('log-ratio').value)||16;
+  const ratio=parseInt(document.getElementById('log-ratio').value)||15;
   const entry={
     method:document.getElementById('log-method').value,
     dose, ratio,
