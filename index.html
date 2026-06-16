@@ -628,6 +628,133 @@ canvas.radar-chart{display:block;margin:0 auto;max-width:100%}
 .key-badge--clicks{background:rgba(167,119,80,.18);color:#c8874a;border:1px solid rgba(167,119,80,.3)}
 .key-badge--temp{background:rgba(220,80,60,.15);color:#d95b44;border:1px solid rgba(220,80,60,.28)}
 .key-badge--time{background:rgba(60,150,130,.15);color:#3a9e88;border:1px solid rgba(60,150,130,.28)}
+
+/* Mini Flavor Profile Bars */
+.profile-bars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(183, 205, 127, 0.2);
+}
+.profile-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.profile-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.profile-bar-track {
+  height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 0.5px solid rgba(183, 205, 127, 0.2);
+}
+.profile-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+.profile-bar-fill.acidez { background: #d95b44; }
+.profile-bar-fill.dulzor { background: #e3a857; }
+.profile-bar-fill.cuerpo { background: #9c6c4c; }
+.profile-bar-fill.aroma { background: #3c9682; }
+
+/* Replicate button style */
+.replicate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: var(--font-main);
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  vertical-align: middle;
+}
+.replicate-btn:hover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+.replicate-btn:active {
+  transform: scale(0.95);
+}
+.replicate-btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+/* Stats charts grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 1.25rem;
+}
+@media(min-width: 600px) {
+  .charts-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.grinds-analysis {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+.grinds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.grind-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(183, 205, 127, 0.25);
+}
+.grind-bean-name {
+  font-weight: 600;
+  color: var(--text2);
+}
+.grind-ideal-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
 </style>
 
 <!-- Firebase SDK -->
@@ -931,6 +1058,7 @@ const calcWater=(d,r)=>d*r, calcBloom=d=>Math.round(d*2);
 const RECIPES=[
   {id:1,method:'V60 Switch',name:'Switch -- inmersión + percolación',desc:'Empieza cerrado para extracción profunda, abre para filtrar.',temp:'91°C',
    baseClicks:105, totalTime:'3:30 - 4:00 min',
+   profile:{acidez:6,dulzor:7,cuerpo:7,aroma:8},
    steps:(d,r)=>{const w=calcWater(d,r),b=calcBloom(d);return[
     {t:'0:00',s:`Bloom: ${b}ml en espiral. Switch cerrado.`},
     {t:'0:30',s:`Vierte hasta ${Math.round(w*.5)}ml. Circular.`},
@@ -940,6 +1068,7 @@ const RECIPES=[
    notes:'Clicks actuales: 105 (probando 102). El switch cerrado da mayor contacto café-agua antes del filtrado.'},
   {id:2,method:'V60 Tradicional',name:'V60 -- vertido clásico',desc:'Percolación continua. Control total del flujo.',temp:'91°C',
    baseClicks:80, totalTime:'2:30 - 3:00 min',
+   profile:{acidez:8,dulzor:7,cuerpo:4,aroma:9},
    steps:(d,r)=>{const w=calcWater(d,r),b=calcBloom(d);return[
     {t:'0:00',s:`Bloom: ${b}ml. Espera 30 seg.`},
     {t:'0:30',s:`Vierte hasta ${Math.round(w*.45)}ml en espiral.`},
@@ -949,6 +1078,7 @@ const RECIPES=[
    notes:'Clicks recomendados: 80. Bloom sin expansión = café oxidado.'},
   {id:3,method:'V60 Neo Tritan',name:'Neo Tritan -- mayor retención de calor',desc:'Misma técnica V60, plástico de alto rendimiento.',temp:'91°C',
    baseClicks:80, totalTime:'2:30 - 3:00 min',
+   profile:{acidez:7,dulzor:7,cuerpo:5,aroma:8},
    steps:(d,r)=>{const w=calcWater(d,r),b=calcBloom(d);return[
     {t:'0:00',s:`Precalienta bien. Bloom: ${b}ml.`},
     {t:'0:35',s:`Vierte hasta ${Math.round(w*.45)}ml. Circular suave.`},
@@ -958,6 +1088,7 @@ const RECIPES=[
    notes:'Clicks recomendados: 80. Retiene más temperatura que cerámica o vidrio.'},
   {id:4,method:'Aeropress',name:'Aeropress -- extracción rápida',desc:'Presión + tiempo corto. Perfil concentrado.',temp:'91°C',
    baseClicks:98, totalTime:'1:30 - 2:00 min',
+   profile:{acidez:5,dulzor:8,cuerpo:6,aroma:7},
    steps:(d,r)=>{const w=calcWater(d,r);return[
     {t:'0:00',s:'Precalienta y humedece el filtro.'},
     {t:'0:10',s:`Agrega ${d}g. Vierte ${w}ml a 91°C.`},
@@ -967,6 +1098,7 @@ const RECIPES=[
    notes:'Tus clicks: 98. Experimenta ±5 clicks sin miedo.'},
   {id:5,method:'Origami',name:'Origami -- percolación elegante',desc:'Copa ancha. Perfil brillante y ácido.',temp:'91°C',
    baseClicks:96, totalTime:'2:30 - 3:00 min',
+   profile:{acidez:9,dulzor:6,cuerpo:4,aroma:9},
    steps:(d,r)=>{const w=calcWater(d,r),b=calcBloom(d);return[
     {t:'0:00',s:`Bloom: ${b}ml. Espera 35 seg.`},
     {t:'0:35',s:`Vierte hasta ${Math.round(w*.5)}ml circular amplio.`},
@@ -976,6 +1108,7 @@ const RECIPES=[
    notes:'Apertura más amplia da perfil más brillante que el V60.'},
   {id:6,method:'Chemex',name:'Chemex -- cuerpo limpio y elegante',desc:'Filtro grueso. Taza muy limpia.',temp:'92°C',
    baseClicks:92, totalTime:'4:00 - 4:30 min',
+   profile:{acidez:6,dulzor:6,cuerpo:3,aroma:8},
    steps:(d,r)=>{const w=calcWater(d,r),b=calcBloom(d);return[
     {t:'0:00',s:`Pre-humedece el filtro. Bloom: ${b}ml.`},
     {t:'0:45',s:`Primera hasta ${Math.round(w*.4)}ml.`},
@@ -985,6 +1118,7 @@ const RECIPES=[
    notes:'Molienda más gruesa por el filtro Chemex. +1°C compensa el tiempo extra.'},
   {id:7,method:'Prensa Francesa',name:'Prensa Francesa -- cuerpo completo',desc:'Inmersión total sin filtro. Máximo cuerpo.',temp:'92°C',
    baseClicks:125, totalTime:'4:00 min',
+   profile:{acidez:3,dulzor:6,cuerpo:9,aroma:6},
    steps:(d,r)=>{const w=calcWater(d,r);return[
     {t:'0:00',s:`${d}g molido grueso. Vierte ${w}ml.`},
     {t:'0:20',s:'Revuelve suavemente.'},
@@ -994,6 +1128,7 @@ const RECIPES=[
    notes:'Amargo = sube clicks. Aguado = baja clicks.'},
   {id:8,method:'Sifón Japonés',name:'Sifón Japonés -- claridad y espectáculo',desc:'Vacío + vapor. Claridad inusual para inmersión.',temp:'93°C',
    baseClicks:93, totalTime:'5:00 - 6:00 min',
+   profile:{acidez:7,dulzor:6,cuerpo:5,aroma:9},
    steps:(d,r)=>{const w=calcWater(d,r);return[
     {t:'0:00',s:`Cámara inferior con ${w}ml. Enciende el fuego.`},
     {t:'2:00',s:'El agua sube. Agrega el café.'},
@@ -1221,21 +1356,81 @@ function renderStats(){
   });
   if(descCount>0) DESCRIPTORS.forEach(d=>{ descAvg[d]=+(descAvg[d]/descCount).toFixed(1); });
 
+  // Calcular Click Ideal por Café (máxima calificación)
+  const beanGrinds = {};
+  logs.forEach(l => {
+    const beanName = (l.bean || '').trim();
+    if (!beanName) return;
+    const clicksVal = parseInt(l.clicks, 10);
+    if (isNaN(clicksVal)) return;
+    const scoreVal = l.score !== undefined ? l.score : 0;
+    
+    if (!beanGrinds[beanName]) {
+      beanGrinds[beanName] = { maxScore: -1, idealClicks: null };
+    }
+    if (scoreVal > beanGrinds[beanName].maxScore) {
+      beanGrinds[beanName].maxScore = scoreVal;
+      beanGrinds[beanName].idealClicks = clicksVal;
+    }
+  });
+
+  const grindsListHtml = Object.entries(beanGrinds)
+    .map(([bean, data]) => {
+      if (data.idealClicks === null) return '';
+      return `<div class="grind-row">
+        <span class="grind-bean-name">${bean}</span>
+        <span class="grind-ideal-val">${data.idealClicks} clics</span>
+      </div>`;
+    })
+    .filter(Boolean)
+    .join('');
+
+  const grindsSectionHtml = grindsListHtml 
+    ? `<div class="grinds-analysis">
+        <div class="chart-box-title" style="margin-bottom:4px;">⚙ Clics ideales por grano de café</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Clic óptimo sugerido basado en la sesión con mayor puntaje para cada grano.</div>
+        <div class="grinds-list">${grindsListHtml}</div>
+       </div>`
+    : '';
+
   el.innerHTML=`
     <div class="stats-summary">
       <div class="stat-card"><div class="stat-card-val">${total}</div><div class="stat-card-key">Sesiones</div></div>
       <div class="stat-card"><div class="stat-card-val">${avg}</div><div class="stat-card-key">Puntaje prom.</div></div>
-      <div class="stat-card"><div class="stat-card-val">${best.score.toFixed(1)}</div><div class="stat-card-key">Mejor taza</div></div>
+      <div class="stat-card"><div class="stat-card-val">${best ? best.score.toFixed(1) : '--'}</div><div class="stat-card-key">Mejor taza</div></div>
       <div class="stat-card"><div class="stat-card-val" style="font-size:1rem">${favMethod}</div><div class="stat-card-key">Método fav.</div></div>
     </div>
-    <div class="chart-box">
-      <div class="chart-box-title">Puntaje promedio por método</div>
-      ${methodBars}
+
+    <div class="charts-grid">
+      <div class="chart-box">
+        <div class="chart-box-title">Puntaje promedio por método</div>
+        ${methodBars}
+      </div>
+
+      ${descCount>0?`<div class="chart-box" style="display:flex;flex-direction:column;align-items:center;">
+        <div class="chart-box-title" style="width:100%;text-align:left;">Perfil de sabor promedio</div>
+        <div style="width:100%;display:flex;justify-content:center;align-items:center;flex:1;min-height:260px;">
+          <canvas class="radar-chart" id="radar-canvas" width="260" height="260"></canvas>
+        </div>
+      </div>`:''}
+
+      <div class="chart-box" style="display:flex;flex-direction:column;align-items:center;">
+        <div class="chart-box-title" style="width:100%;text-align:left;">⚙ Clics vs. Calificación</div>
+        <div style="width:100%;display:flex;justify-content:center;align-items:center;flex:1;min-height:220px;padding:10px 0;">
+          <canvas id="correlation-canvas" width="280" height="220" style="max-width:100%;"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box" style="display:flex;flex-direction:column;align-items:center;">
+        <div class="chart-box-title" style="width:100%;text-align:left;">📈 Evolución de Calidad</div>
+        <div style="width:100%;display:flex;justify-content:center;align-items:center;flex:1;min-height:220px;padding:10px 0;">
+          <canvas id="trend-canvas" width="280" height="220" style="max-width:100%;"></canvas>
+        </div>
+      </div>
     </div>
-    ${descCount>0?`<div class="chart-box">
-      <div class="chart-box-title">Perfil de sabor promedio</div>
-      <canvas class="radar-chart" id="radar-canvas" width="260" height="260"></canvas>
-    </div>`:''}
+
+    ${grindsSectionHtml}
+
     ${best?`<div class="chart-box" onclick="goToBestSession(${best.id})" title="Ver en Mi Registro" style="cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">
       <div class="chart-box-title">Mejor sesión registrada <span style="font-size:11px;color:var(--text3)">↗ Ver registro</span></div>
       <div style="font-size:15px;color:var(--text);font-weight:500">${best.method} · ${best.score.toFixed(1)}/10</div>
@@ -1250,6 +1445,240 @@ function renderStats(){
     const canvas=document.getElementById('radar-canvas');
     if(canvas) drawRadar(canvas, DESCRIPTORS.map(d=>descAvg[d]||0), DESCRIPTORS);
   }
+
+  // Dibujar gráficos adicionales
+  const corrCanvas = document.getElementById('correlation-canvas');
+  if (corrCanvas) drawCorrelation(corrCanvas, logs);
+
+  const trendCanvas = document.getElementById('trend-canvas');
+  if (trendCanvas) drawTrend(trendCanvas, logs);
+}
+
+function drawCorrelation(canvas, dataLogs) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Filtrar logs con clics válidos y calificación
+  const valid = dataLogs.filter(l => l.clicks && !isNaN(Number(l.clicks)) && l.score !== undefined);
+  if (valid.length === 0) {
+    ctx.fillStyle = 'var(--text3)';
+    ctx.font = '13px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Registra clics y puntajes para ver correlación', W / 2, H / 2);
+    return;
+  }
+
+  // Encontrar min y max de clics
+  const clicksArr = valid.map(l => Number(l.clicks));
+  let minX = Math.min(...clicksArr);
+  let maxX = Math.max(...clicksArr);
+  if (minX === maxX) {
+    minX = Math.max(0, minX - 10);
+    maxX += 10;
+  } else {
+    const margin = Math.max(5, Math.round((maxX - minX) * 0.15));
+    minX = Math.max(0, minX - margin);
+    maxX = maxX + margin;
+  }
+
+  const minY = 0;
+  const maxY = 10;
+
+  // Márgenes del gráfico
+  const padLeft = 35;
+  const padRight = 15;
+  const padTop = 15;
+  const padBottom = 35;
+
+  const graphW = W - padLeft - padRight;
+  const graphH = H - padTop - padBottom;
+
+  // Dibujar fondo de rejilla (Y)
+  ctx.strokeStyle = 'rgba(183, 205, 127, 0.2)';
+  ctx.lineWidth = 0.8;
+  for (let val = 0; val <= 10; val += 2) {
+    const y = padTop + graphH * (1 - (val - minY) / (maxY - minY));
+    ctx.beginPath();
+    ctx.moveTo(padLeft, y);
+    ctx.lineTo(W - padRight, y);
+    ctx.stroke();
+
+    // Etiqueta eje Y
+    ctx.fillStyle = 'var(--text3)';
+    ctx.font = '500 9px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(val, padLeft - 6, y);
+  }
+
+  // Eje X marcas
+  const steps = 4;
+  for (let i = 0; i <= steps; i++) {
+    const val = Math.round(minX + (maxX - minX) * (i / steps));
+    const x = padLeft + graphW * (i / steps);
+    ctx.beginPath();
+    ctx.moveTo(x, padTop);
+    ctx.lineTo(x, H - padBottom);
+    ctx.stroke();
+
+    // Etiqueta eje X
+    ctx.fillStyle = 'var(--text3)';
+    ctx.font = '500 9px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(val, x, H - padBottom + 6);
+  }
+
+  // Título de los ejes
+  ctx.fillStyle = 'var(--accent)';
+  ctx.font = 'bold 9px Plus Jakarta Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Clics del molino (K6)', padLeft + graphW / 2, H - 8);
+
+  ctx.save();
+  ctx.translate(10, padTop + graphH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Puntaje de taza', 0, 0);
+  ctx.restore();
+
+  // Dibujar puntos
+  valid.forEach(l => {
+    const cx = Number(l.clicks);
+    const cy = Number(l.score);
+    const x = padLeft + graphW * ((cx - minX) / (maxX - minX));
+    const y = padTop + graphH * (1 - (cy - minY) / (maxY - minY));
+
+    if (cy >= 8.0) {
+      // Exitoso: punto grande con borde resaltado
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = 'var(--accent)';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(x, y, 8, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(68, 90, 20, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else {
+      // Normal: punto más pequeño
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(150, 172, 96, 0.7)';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  });
+}
+
+function drawTrend(canvas, dataLogs) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  if (dataLogs.length < 2) {
+    ctx.fillStyle = 'var(--text3)';
+    ctx.font = '13px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Registra más tazas para ver tendencia', W / 2, H / 2);
+    return;
+  }
+
+  // Tomar los últimos 12 logs y ordenarlos cronológicamente (de más antiguo a más nuevo)
+  const recent = dataLogs.slice(0, 12).reverse();
+  const n = recent.length;
+
+  const minY = 0;
+  const maxY = 10;
+
+  // Márgenes del gráfico
+  const padLeft = 30;
+  const padRight = 15;
+  const padTop = 15;
+  const padBottom = 25;
+
+  const graphW = W - padLeft - padRight;
+  const graphH = H - padTop - padBottom;
+
+  // Dibujar fondo de rejilla (Y)
+  ctx.strokeStyle = 'rgba(183, 205, 127, 0.2)';
+  ctx.lineWidth = 0.8;
+  for (let val = 0; val <= 10; val += 2) {
+    const y = padTop + graphH * (1 - (val - minY) / (maxY - minY));
+    ctx.beginPath();
+    ctx.moveTo(padLeft, y);
+    ctx.lineTo(W - padRight, y);
+    ctx.stroke();
+
+    // Etiqueta eje Y
+    ctx.fillStyle = 'var(--text3)';
+    ctx.font = '500 9px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(val, padLeft - 6, y);
+  }
+
+  const points = recent.map((l, i) => {
+    const cy = l.score !== undefined ? l.score : 0;
+    const x = padLeft + graphW * (i / (n - 1));
+    const y = padTop + graphH * (1 - (cy - minY) / (maxY - minY));
+    return { x, y, score: cy };
+  });
+
+  // Área sombreada bajo la curva
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, padTop + graphH);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(points[points.length - 1].x, padTop + graphH);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(68, 90, 20, 0.07)';
+  ctx.fill();
+
+  // Línea continua
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  });
+  ctx.strokeStyle = 'var(--accent)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Puntos individuales
+  points.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.strokeStyle = 'var(--accent)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // Etiquetas para eje X (puntos de datos cronológicos: 1, 2, 3...)
+  points.forEach((p, i) => {
+    const label = (i + 1).toString();
+    ctx.fillStyle = 'var(--text3)';
+    ctx.font = '500 9px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(label, p.x, H - padBottom + 6);
+  });
+
+  ctx.fillStyle = 'var(--accent)';
+  ctx.font = 'bold 9px Plus Jakarta Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Últimas ' + n + ' tazas (cronológico)', padLeft + graphW / 2, H - 6);
 }
 
 function drawRadar(canvas, data, labels){
@@ -1346,6 +1775,43 @@ function editLog(firestoreId, localId) {
   document.getElementById('export-btn').style.display = 'none';
   document.getElementById('pane-log').scrollTop = 0;
 }
+function replicateLog(firestoreId, localId) {
+  const log = logs.find(l => (firestoreId && l.firestoreId === firestoreId) || l.id === localId);
+  if (!log) return;
+  
+  // Rellenar parámetros de preparación
+  document.getElementById('log-method').value = log.method || 'V60 Tradicional';
+  document.getElementById('log-ratio').value = log.ratio || 15;
+  document.getElementById('log-dose-input').value = log.dose || 18;
+  document.getElementById('log-bean').value = log.bean || '';
+  document.getElementById('log-clicks').value = log.clicks || '';
+  document.getElementById('log-temp').value = log.temp || '';
+  document.getElementById('log-time').value = log.brewTime || '';
+  
+  // Limpiar comentarios, score y descriptores para la nueva sesión
+  document.getElementById('log-notes').value = '';
+  document.getElementById('sl-score').value = 7;
+  updateScore();
+  DESCRIPTORS.forEach(d => {
+    document.getElementById('sl-' + d).value = 5;
+    updateSlider(d);
+  });
+  
+  // Asegurar que el formulario está en modo "Nueva sesión"
+  editingFirestoreId = null;
+  editingLocalId = null;
+  document.querySelector('.form-title').textContent = 'Nueva sesión';
+  document.getElementById('submit-btn').textContent = 'Guardar sesión';
+  document.getElementById('cancel-btn').style.display = 'none';
+  document.getElementById('export-btn').style.display = 'block';
+  
+  // Cambiar a la pestaña de registro y scroll al inicio
+  switchTab('log');
+  document.getElementById('pane-log').scrollTop = 0;
+  
+  // Mensaje de estado
+  setStatus('Parámetros de receta cargados para replicar ✓');
+}
 function cancelEdit() {
   editingFirestoreId = null;
   editingLocalId = null;
@@ -1427,6 +1893,20 @@ function renderRecipes(){
           </div>
           <span class="expand-icon">${isExp?'▲':'▼'}</span>
         </div>
+      </div>
+
+      <div class="profile-bars" onclick="event.stopPropagation()">
+        ${Object.entries(recipe.profile).map(([attr, val]) => `
+          <div class="profile-bar-item">
+            <div class="profile-bar-header">
+              <span>${attr}</span>
+              <span>${val}/10</span>
+            </div>
+            <div class="profile-bar-track">
+              <div class="profile-bar-fill ${attr}" style="width:${val*10}%"></div>
+            </div>
+          </div>
+        `).join('')}
       </div>
 
       <div class="selectors-row" onclick="event.stopPropagation()">
@@ -1650,7 +2130,21 @@ function renderLogs(){
 
   list.innerHTML=filtered.map(l=>{
     const desc=l.descriptors||{};
-    const pills=Object.entries(desc).map(([k,v])=>`<span class="desc-pill">${k} ${v}/10</span>`).join('');
+    const hasProfile = Object.keys(desc).length > 0;
+    const profileHtml = hasProfile ? `
+      <div class="profile-bars">
+        ${Object.entries(desc).map(([attr, val]) => `
+          <div class="profile-bar-item">
+            <div class="profile-bar-header">
+              <span>${attr}</span>
+              <span>${val}/10</span>
+            </div>
+            <div class="profile-bar-track">
+              <div class="profile-bar-fill ${attr}" style="width:${val*10}%"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>` : '';
     const dateStr=l.date||'';
     const keyBadges=[
       l.clicks?`<span class="key-badge key-badge--clicks">⚙ ${l.clicks} clicks</span>`:'',
@@ -1660,13 +2154,17 @@ function renderLogs(){
     return `<div class="log-item">
       <div class="log-item-header">
         <div style="flex:1;min-width:0">
-          <div class="log-title">${l.method} · ${l.dose}g · 1:${l.ratio||16} · ${l.water||'--'}ml</div>
+          <div class="log-title">${l.method} · ${l.dose}g · 1:${l.ratio||15} · ${l.water||'--'}ml</div>
           ${l.bean?`<div class="log-bean">${l.bean}</div>`:''}
           ${keyBadges?`<div class="log-key-params">${keyBadges}</div>`:''}
           ${dateStr?`<div class="log-meta">${dateStr}</div>`:''}
         </div>
         <div style="display:flex;align-items:center;flex-shrink:0;gap:8px">
           <span class="log-score">${(l.score||0).toFixed(1)}/10</span>
+          <button class="replicate-btn" title="Replicar esta receta" onclick="replicateLog('${l.firestoreId||''}',${l.id})">
+            <svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 12a9 9 0 0 1 15-6.7L21 5M7 23l-4-4 4-4M21 12a9 9 0 0 1-15 6.7L3 19"/></svg>
+            Replicar
+          </button>
           <button class="edit-btn" title="Editar" onclick="editLog('${l.firestoreId||''}',${l.id})">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </button>
@@ -1675,7 +2173,7 @@ function renderLogs(){
           </button>
         </div>
       </div>
-      ${pills?`<div class="log-descriptors">${pills}</div>`:''}
+      ${profileHtml}
       ${l.notes?`<div class="log-notes">${l.notes}</div>`:''}
     </div>`;
   }).join('');
