@@ -1401,6 +1401,22 @@ function renderStats(){
       <div class="stat-card"><div class="stat-card-val" style="font-size:1rem">${favMethod}</div><div class="stat-card-key">Método fav.</div></div>
     </div>
 
+    ${best?`<div class="chart-box" style="margin-bottom:1.25rem;">
+      <div onclick="goToBestSession(${best.id})" title="Ver en Historial" style="cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">
+        <div class="chart-box-title">Mejor sesión registrada <span style="font-size:11px;color:var(--text3)">↗ Ver en Historial</span></div>
+        <div style="font-size:15px;color:var(--text);font-weight:500">${best.method} · ${best.score.toFixed(1)}/10</div>
+        ${best.bean?`<div style="font-size:14px;color:var(--accent);font-style:italic;margin-top:3px">${best.bean}</div>`:''}
+        ${best.date?`<div style="font-size:12px;color:var(--text3);margin-top:3px">${best.date}</div>`:''}
+        ${best.notes?`<div style="font-size:13px;color:var(--text2);margin-top:6px;line-height:1.5">${best.notes}</div>`:''}
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:flex-end;">
+        <button class="replicate-btn" onclick="event.stopPropagation(); replicateLog('${best.firestoreId||''}', ${best.id})">
+          <svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 12a9 9 0 0 1 15-6.7L21 5M7 23l-4-4 4-4M21 12a9 9 0 0 1-15 6.7L3 19"/></svg>
+          Replicar Receta
+        </button>
+      </div>
+    </div>`:''}
+
     <div class="charts-grid">
       <div class="chart-box">
         <div class="chart-box-title">Puntaje promedio por método</div>
@@ -1430,14 +1446,6 @@ function renderStats(){
     </div>
 
     ${grindsSectionHtml}
-
-    ${best?`<div class="chart-box" onclick="goToBestSession(${best.id})" title="Ver en Mi Registro" style="cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">
-      <div class="chart-box-title">Mejor sesión registrada <span style="font-size:11px;color:var(--text3)">↗ Ver registro</span></div>
-      <div style="font-size:15px;color:var(--text);font-weight:500">${best.method} · ${best.score.toFixed(1)}/10</div>
-      ${best.bean?`<div style="font-size:14px;color:var(--accent);font-style:italic;margin-top:3px">${best.bean}</div>`:''}
-      ${best.date?`<div style="font-size:12px;color:var(--text3);margin-top:3px">${best.date}</div>`:''}
-      ${best.notes?`<div style="font-size:13px;color:var(--text2);margin-top:6px;line-height:1.5">${best.notes}</div>`:''}
-    </div>`:''}
   `;
 
   // Dibujar radar después de insertar el canvas
@@ -1779,7 +1787,7 @@ function replicateLog(firestoreId, localId) {
   const log = logs.find(l => (firestoreId && l.firestoreId === firestoreId) || l.id === localId);
   if (!log) return;
   
-  // Rellenar parámetros de preparación
+  // Rellenar parámetros de preparación en el formulario de Registro
   document.getElementById('log-method').value = log.method || 'V60 Tradicional';
   document.getElementById('log-ratio').value = log.ratio || 15;
   document.getElementById('log-dose-input').value = log.dose || 18;
@@ -1804,13 +1812,21 @@ function replicateLog(firestoreId, localId) {
   document.getElementById('submit-btn').textContent = 'Guardar sesión';
   document.getElementById('cancel-btn').style.display = 'none';
   document.getElementById('export-btn').style.display = 'block';
+
+  // Configurar y expandir la receta correspondiente en la pestaña de Recetas
+  const recipe = RECIPES.find(r => r.method === log.method);
+  if (recipe) {
+    selectedDoses[recipe.id] = log.dose || 18;
+    selectedRatios[recipe.id] = log.ratio || 15;
+    expandedId = recipe.id;
+    renderRecipes();
+  }
   
-  // Cambiar a la pestaña de registro y scroll al inicio
-  switchTab('log');
-  document.getElementById('pane-log').scrollTop = 0;
+  // Cambiar a la pestaña de Recetas para que el usuario pueda ver los pasos/instrucciones
+  switchTab('recipes');
   
   // Mensaje de estado
-  setStatus('Parámetros de receta cargados para replicar ✓');
+  setStatus('Parámetros de receta listos en Recetas ✓');
 }
 function cancelEdit() {
   editingFirestoreId = null;
