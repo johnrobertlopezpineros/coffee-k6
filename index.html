@@ -18,10 +18,15 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f9ee;--bg2:#e8f3d5;--bg3:#d9ef9f;
-  --border:#b7cd7f;--border2:#96ac60;
-  --text:#203500;--text2:#31470b;--text3:#778c43;
-  --accent:#445a14;--accent2:#586e26;--gold:#96ac60;
+  /* Default: Verde Azul Costero (Teal) */
+  --bg:#edf6f7;--bg2:#ddeef1;--bg3:#c9e4ea;
+  --border:#b0d7de;--border2:#86bdc7;
+  --text:#10262c;--text2:#21434c;--text3:#4a747f;
+  --accent:#0e6676;--accent2:#084d5a;--gold:#168598;
+  --card-bg:rgba(255,255,255,0.7);
+  --pill-bg:#e5f2f5;
+  --pill-active:#0e6676;
+  --pill-active-text:#ffffff;
   
   --font-main:'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-title:'DM Serif Display', Georgia, serif;
@@ -351,12 +356,277 @@ h1 span{color:var(--accent);font-style:italic}
 .step-item.step-done{opacity:.45}
 .step-item.step-done .step-num{background:var(--border);color:var(--text3)}
 
-/* Log form */
-.log-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow-sm)}
-.form-title{font-family:var(--font-title);font-size:1.6rem;font-weight:400;margin-bottom:1.25rem;color:var(--text);line-height:1.2}
-.form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-.form-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px}
-.form-group label{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+/* Theme: Verde Oliva */
+body.theme-olive{
+  --bg:#f4f9ee;--bg2:#e8f3d5;--bg3:#d9ef9f;
+  --border:#b7cd7f;--border2:#96ac60;
+  --text:#203500;--text2:#31470b;--text3:#778c43;
+  --accent:#445a14;--accent2:#586e26;--gold:#96ac60;
+  --card-bg:rgba(255,255,255,0.65);
+  --pill-bg:#e9f2db;
+  --pill-active:#445a14;
+  --pill-active-text:#ffffff;
+}
+
+.theme-toggle-btn{
+  padding:4px 9px;
+  font-size:11px;
+  font-weight:800;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--bg2);
+  color:var(--accent);
+  cursor:pointer;
+  font-family:var(--font-main);
+  transition:all var(--transition-fast);
+  white-space:nowrap;
+}
+.theme-toggle-btn:active{transform:scale(0.95);opacity:0.85}
+
+/* Compact Log form */
+.log-form{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:12px 14px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow-sm);
+}
+.form-title{
+  font-family:var(--font-title);
+  font-size:1.35rem;
+  font-weight:400;
+  margin-bottom:8px;
+  color:var(--text);
+  line-height:1.2;
+}
+.form-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  flex:1;
+  min-width:110px;
+}
+.form-group label{
+  font-size:10px;
+  font-weight:900;
+  color:var(--text);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  margin-bottom:1px;
+}
+.form-group select,.form-group input,.form-group textarea{
+  font-size:13.5px;
+  font-family:var(--font-main);
+  padding:6px 9px;
+  height:36px;
+  border:1px solid var(--border2);
+  border-radius:var(--radius-sm);
+  background:var(--bg);
+  color:var(--text);
+  width:100%;
+  -webkit-appearance:none;
+  appearance:none;
+  transition:border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline:none;
+}
+.form-group select:focus-visible,.form-group input:focus-visible,.form-group textarea:focus-visible{
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(14, 102, 118, 0.2);
+}
+.form-group select{
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230e6676' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat:no-repeat;
+  background-position:right 10px center;
+  background-size:14px;
+  padding-right:30px;
+}
+.form-group textarea{
+  resize:none;
+  height:44px;
+  min-height:44px;
+  line-height:1.35;
+  font-size:12px;
+  padding:5px 8px;
+}
+.full-row{flex-basis:100%;min-width:100%}
+
+.form-section{
+  font-size:10.5px;
+  font-weight:900;
+  color:var(--text);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin:8px 0 5px;
+  padding-top:6px;
+  border-top:1px solid var(--border);
+}
+
+/* Descriptors 2x2 Grid with individual delimited capsule cards */
+.descriptor-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px 8px;
+  margin-bottom:8px;
+}
+.descriptor-card{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  background:var(--card-bg);
+  padding:5px 7px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  box-shadow:0 1px 3px rgba(0,0,0,0.03);
+}
+.descriptor-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.descriptor-title{
+  font-size:10px;
+  font-weight:900;
+  color:var(--text);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.descriptor-badge{
+  font-size:10px;
+  font-weight:900;
+  color:var(--accent);
+  background:var(--bg2);
+  padding:1px 5px;
+  border-radius:6px;
+  font-family:var(--font-mono);
+}
+.pill-row{
+  display:flex;
+  gap:3px;
+  justify-content:space-between;
+}
+.pill-btn{
+  flex:1;
+  height:24px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text2);
+  font-size:11px;
+  font-weight:700;
+  font-family:var(--font-main);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all var(--transition-fast);
+  padding:0;
+}
+.pill-btn:active{transform:scale(0.92)}
+.pill-btn.active{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#ffffff;
+  font-weight:900;
+}
+
+/* Score Row with Fast Tap Pills */
+.score-card{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  background:var(--card-bg);
+  padding:6px 8px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  margin-bottom:8px;
+}
+.score-header-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.score-label{
+  font-size:10px;
+  font-weight:900;
+  color:var(--text);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.score-badge{
+  font-size:10.5px;
+  font-weight:900;
+  color:#ffffff;
+  background:var(--accent);
+  padding:1px 7px;
+  border-radius:8px;
+  font-family:var(--font-mono);
+}
+.score-pills-row{
+  display:flex;
+  gap:4px;
+  justify-content:space-between;
+}
+.score-pill-btn{
+  flex:1;
+  height:26px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text2);
+  font-size:10px;
+  font-weight:700;
+  font-family:var(--font-main);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all var(--transition-fast);
+  padding:0;
+}
+.score-pill-btn:active{transform:scale(0.92)}
+.score-pill-btn.active{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#ffffff;
+  font-weight:900;
+}
+
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.submit-btn{
+  flex:1;
+  height:38px;
+  padding:0 14px;
+  font-size:12.5px;
+  font-family:var(--font-main);
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  border:none;
+  border-radius:var(--radius-sm);
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  transition:background-color var(--transition-fast), transform var(--transition-fast);
+}
+.submit-btn:hover{background:var(--accent2)}
+.submit-btn:active{transform:scale(0.98)}
+.export-btn{
+  height:38px;
+  padding:0 14px;
+  font-size:12px;
+  font-family:var(--font-main);
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+letter-spacing:.06em}
 .form-group select,.form-group input,.form-group textarea{
   font-size:16px;
   font-family:var(--font-main);
@@ -857,6 +1127,7 @@ canvas.radar-chart{display:block;margin:0 auto;max-width:100%}
   <div class="header-inner">
     <h1>Diario de <span>Café</span></h1>
     <span class="header-meta" style="display:none" id="header-meta-text">K6 · V60 &amp; más</span>
+    <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Cambiar tema">🌊 Costero</button>
     <div class="user-area" id="user-area" style="display:none">
       <img id="user-avatar" class="user-avatar" src="" alt="" style="display:none">
       <span id="user-name" class="user-name"></span>
@@ -867,11 +1138,11 @@ canvas.radar-chart{display:block;margin:0 auto;max-width:100%}
 </header>
 
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('recipes')">
+  <button class="tab-btn" onclick="switchTab('recipes')">
     <svg viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span class="tab-btn-label">Recetas</span>
   </button>
-  <button class="tab-btn" onclick="switchTab('log')">
+  <button class="tab-btn active" onclick="switchTab('log')">
     <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span class="tab-btn-label">Registro</span>
   </button>
@@ -884,7 +1155,7 @@ canvas.radar-chart{display:block;margin:0 auto;max-width:100%}
 <div class="tab-content">
 
   <!-- RECETAS -->
-  <div id="pane-recipes" class="tab-pane active">
+  <div id="pane-recipes" class="tab-pane">
     <div class="filter-section">
       <div class="filter-label">Filtrar por método</div>
       <div class="filters">
@@ -903,7 +1174,7 @@ canvas.radar-chart{display:block;margin:0 auto;max-width:100%}
   </div>
 
   <!-- REGISTRO -->
-  <div id="pane-log" class="tab-pane">
+  <div id="pane-log" class="tab-pane active">
     <div class="log-form">
       <div class="form-title">Nueva sesión</div>
 
@@ -961,31 +1232,88 @@ canvas.radar-chart{display:block;margin:0 auto;max-width:100%}
       </div>
 
       <div class="form-section">Descriptores de taza</div>
-      <div class="slider-grid">
-        <div class="slider-group">
-          <div class="slider-label-row"><span class="slider-label">Acidez</span><span class="slider-val" id="val-acidez">5</span></div>
-          <input type="range" min="1" max="10" value="5" id="sl-acidez" oninput="updateSlider('acidez')">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label-row"><span class="slider-label">Dulzor</span><span class="slider-val" id="val-dulzor">5</span></div>
-          <input type="range" min="1" max="10" value="5" id="sl-dulzor" oninput="updateSlider('dulzor')">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label-row"><span class="slider-label">Cuerpo</span><span class="slider-val" id="val-cuerpo">5</span></div>
-          <input type="range" min="1" max="10" value="5" id="sl-cuerpo" oninput="updateSlider('cuerpo')">
+      <div class="descriptor-grid">
+        <!-- Acidez -->
+        <div class="descriptor-card" id="card-acidez">
+          <div class="descriptor-header">
+            <span class="descriptor-title">Acidez</span>
+            <span class="descriptor-badge" id="val-acidez">5</span>
+          </div>
+          <input type="hidden" id="sl-acidez" value="5">
+          <div class="pill-row">
+            <button type="button" class="pill-btn" onclick="setPillRating('acidez', 1)">1</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('acidez', 2)">2</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('acidez', 3)">3</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('acidez', 4)">4</button>
+            <button type="button" class="pill-btn active" onclick="setPillRating('acidez', 5)">5</button>
+          </div>
         </div>
 
-        <div class="slider-group">
-          <div class="slider-label-row"><span class="slider-label">Aroma</span><span class="slider-val" id="val-aroma">5</span></div>
-          <input type="range" min="1" max="10" value="5" id="sl-aroma" oninput="updateSlider('aroma')">
+        <!-- Dulzor -->
+        <div class="descriptor-card" id="card-dulzor">
+          <div class="descriptor-header">
+            <span class="descriptor-title">Dulzor</span>
+            <span class="descriptor-badge" id="val-dulzor">5</span>
+          </div>
+          <input type="hidden" id="sl-dulzor" value="5">
+          <div class="pill-row">
+            <button type="button" class="pill-btn" onclick="setPillRating('dulzor', 1)">1</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('dulzor', 2)">2</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('dulzor', 3)">3</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('dulzor', 4)">4</button>
+            <button type="button" class="pill-btn active" onclick="setPillRating('dulzor', 5)">5</button>
+          </div>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="descriptor-card" id="card-cuerpo">
+          <div class="descriptor-header">
+            <span class="descriptor-title">Cuerpo</span>
+            <span class="descriptor-badge" id="val-cuerpo">5</span>
+          </div>
+          <input type="hidden" id="sl-cuerpo" value="5">
+          <div class="pill-row">
+            <button type="button" class="pill-btn" onclick="setPillRating('cuerpo', 1)">1</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('cuerpo', 2)">2</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('cuerpo', 3)">3</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('cuerpo', 4)">4</button>
+            <button type="button" class="pill-btn active" onclick="setPillRating('cuerpo', 5)">5</button>
+          </div>
+        </div>
+
+        <!-- Aroma -->
+        <div class="descriptor-card" id="card-aroma">
+          <div class="descriptor-header">
+            <span class="descriptor-title">Aroma</span>
+            <span class="descriptor-badge" id="val-aroma">5</span>
+          </div>
+          <input type="hidden" id="sl-aroma" value="5">
+          <div class="pill-row">
+            <button type="button" class="pill-btn" onclick="setPillRating('aroma', 1)">1</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('aroma', 2)">2</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('aroma', 3)">3</button>
+            <button type="button" class="pill-btn" onclick="setPillRating('aroma', 4)">4</button>
+            <button type="button" class="pill-btn active" onclick="setPillRating('aroma', 5)">5</button>
+          </div>
         </div>
       </div>
 
       <div class="form-section">Calificación final</div>
-      <div class="score-row">
-        <label>Puntaje</label>
-        <input type="range" min="0" max="10" step="0.5" value="7" id="sl-score" oninput="updateScore()">
-        <span class="score-display" id="val-score">7.0</span>
+      <div class="score-card">
+        <div class="score-header-row">
+          <span class="score-label">Puntaje</span>
+          <span class="score-badge" id="val-score">8.5 ★</span>
+        </div>
+        <input type="hidden" id="sl-score" value="8.5">
+        <div class="score-pills-row">
+          <button type="button" class="score-pill-btn" onclick="setPillScore(7.0)">7.0</button>
+          <button type="button" class="score-pill-btn" onclick="setPillScore(7.5)">7.5</button>
+          <button type="button" class="score-pill-btn" onclick="setPillScore(8.0)">8.0</button>
+          <button type="button" class="score-pill-btn active" onclick="setPillScore(8.5)">8.5</button>
+          <button type="button" class="score-pill-btn" onclick="setPillScore(9.0)">9.0</button>
+          <button type="button" class="score-pill-btn" onclick="setPillScore(9.5)">9.5</button>
+          <button type="button" class="score-pill-btn" onclick="setPillScore(10.0)">10</button>
+        </div>
       </div>
 
       <div class="form-row">
@@ -1837,8 +2165,67 @@ function cancelEdit() {
   document.getElementById('cancel-btn').style.display = 'none';
   document.getElementById('export-btn').style.display = 'block';
 }
-function updateSlider(n){document.getElementById('val-'+n).textContent=document.getElementById('sl-'+n).value;}
-function updateScore(){document.getElementById('val-score').textContent=parseFloat(document.getElementById('sl-score').value).toFixed(1);}
+// Rating Pills and Score Logic
+function setPillRating(descriptor, val) {
+  const input = document.getElementById('sl-' + descriptor);
+  if (input) input.value = val;
+  const badge = document.getElementById('val-' + descriptor);
+  if (badge) badge.textContent = val;
+  
+  const card = document.getElementById('card-' + descriptor);
+  if (card) {
+    const buttons = card.querySelectorAll('.pill-btn');
+    buttons.forEach((btn, idx) => {
+      btn.classList.toggle('active', (idx + 1) === parseInt(val));
+    });
+  }
+}
+
+function setPillScore(val) {
+  const input = document.getElementById('sl-score');
+  if (input) input.value = val;
+  const display = document.getElementById('val-score');
+  if (display) display.textContent = parseFloat(val).toFixed(1) + ' ★';
+  
+  const buttons = document.querySelectorAll('.score-pill-btn');
+  const SCORE_VALS = [7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0];
+  buttons.forEach((btn, idx) => {
+    btn.classList.toggle('active', Math.abs(SCORE_VALS[idx] - parseFloat(val)) < 0.1);
+  });
+}
+
+function updateSlider(n) {
+  const val = document.getElementById('sl-' + n).value;
+  setPillRating(n, parseInt(val) || 5);
+}
+
+function updateScore() {
+  const val = parseFloat(document.getElementById('sl-score').value) || 7.0;
+  setPillScore(val);
+}
+
+// Theme Management
+function initTheme() {
+  const saved = localStorage.getItem('coffee_theme') || 'coastal';
+  applyTheme(saved);
+}
+function toggleTheme() {
+  const isOlive = document.body.classList.contains('theme-olive');
+  const next = isOlive ? 'coastal' : 'olive';
+  localStorage.setItem('coffee_theme', next);
+  applyTheme(next);
+}
+function applyTheme(t) {
+  if (t === 'olive') {
+    document.body.classList.add('theme-olive');
+    const btn = document.getElementById('theme-toggle-btn');
+    if (btn) btn.textContent = '🌿 Oliva';
+  } else {
+    document.body.classList.remove('theme-olive');
+    const btn = document.getElementById('theme-toggle-btn');
+    if (btn) btn.textContent = '🌊 Costero';
+  }
+}
 function getDescriptors(){const o={};DESCRIPTORS.forEach(d=>o[d]=parseInt(document.getElementById('sl-'+d).value));return o;}
 
 function stepDoseLog(delta){
@@ -1886,7 +2273,7 @@ function resetForm(){
   document.getElementById('log-dose-input').value=18;
   document.getElementById('log-ratio').value=15;
   DESCRIPTORS.forEach(d=>{document.getElementById('sl-'+d).value=5;updateSlider(d);});
-  document.getElementById('sl-score').value=7;updateScore();
+  document.getElementById('sl-score').value=8.5;updateScore();
 }
 
 // ── Recipes ───────────────────────────────────────────────────────────
@@ -2266,7 +2653,7 @@ if('serviceWorker' in navigator){
   });
 }
 
-loadLogs();renderRecipes();
+initTheme();loadLogs();renderRecipes();switchTab('log');
 </script>
 
 
