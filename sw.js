@@ -1,4 +1,4 @@
-const CACHE = 'cafe-k6-v8';
+const CACHE = 'cafe-k6-v9';
 const ASSETS = [
   './',
   './manifest.json',
